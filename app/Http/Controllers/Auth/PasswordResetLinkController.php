@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth\Api;
+namespace App\Http\Controllers\Auth;
 
 use Carbon\Carbon;
 use App\Models\User;

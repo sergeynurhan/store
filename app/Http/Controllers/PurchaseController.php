@@ -12,12 +12,9 @@ use Illuminate\Support\Facades\Mail;
 
 class PurchaseController extends Controller
 {
-    public function purchase(Request $request, $productId, Purchase $purchase)
-    {  
-        $product = Product::find($productId);
+    public function purchase(Product $product, Purchase $purchase)
+    {
         $user = auth()->user();
-
-        $this->authorize('purchase', $purchase);
 
         if (!$product)
         {

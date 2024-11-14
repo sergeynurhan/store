@@ -6,6 +6,7 @@ use App\Models\Store;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;
+use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
 {
@@ -16,48 +17,39 @@ class ProductController extends Controller
     {
         $products = Product::where('store_id', $id)->get();
 
-        return response()->json($products);
+        return ProductResource::collection($products);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductRequest $request, $id, Product $product)
+    public function store(ProductRequest $request, Store $store, Product $product)
     {
-        $this->authorize('create', $product);
-
-        $store = Store::find($id);
         $data = $request->validated();
-        
         $product = $store->products()->create($data);
 
-        return response()->json($product);
+        return new ProductResource($product);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Product $product)
     {
-        $product = Product::find($id);
-
-        return response()->json($product);
+        return new ProductResource($product);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductRequest $request, $id)
+    public function update(ProductRequest $request, Product $product)
     {
-        $product = Product::find($id);
-        $this->authorize('update', $product);
-
         if (auth()->user()->id === $product->store->manager_id)
         {
             $data = $request->validated();
             $product->update($data);
     
-            return response()->json($product);
+            return new ProductResource($product);
         }
 
         return response()->json("Current manager cannot update another manager's product");
@@ -66,10 +58,8 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Product $product)
     {
-        $product = Product::find($id);
-        
         if (auth()->user()->id === $product->store->manager_id)
         {
             $product->delete();

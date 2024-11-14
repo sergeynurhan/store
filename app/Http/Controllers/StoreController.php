@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreRequest;
+use App\Http\Resources\StoreResource;
 use App\Models\Store;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class StoreController extends Controller
     {
         $stores = Store::with('products')->get();
 
-        return response()->json($stores);
+        return StoreResource::collection($stores);
     }
 
     /**
@@ -24,45 +25,35 @@ class StoreController extends Controller
      */
     public function store(StoreRequest $request, Store $store)
     {
-        $this->authorize('create', $store);
-
         $data = $request->validated();
         $store = Store::create($data);
 
-        return response()->json($store);
+        return new StoreResource($store);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Store $store)
     {
-        $store = Store::find($id);
-
-        return response()->json($store);
+        return new StoreResource($store);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreRequest $request, $id, Store $store)
+    public function update(StoreRequest $request, Store $store)
     {
-        $store = Store::find($id);
-        
-        $this->authorize('update', $store);
         $store->update($request->validated());
 
-        return response()->json($store);
+        return new StoreResource($store);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Store $store)
     {
-        $store = Store::find($id);
-        
-        $this->authorize('delete', $store);
         $store->delete();
 
         return response()->json("Store deleted successfuly");

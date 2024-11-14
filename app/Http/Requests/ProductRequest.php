@@ -24,7 +24,7 @@ class ProductRequest extends FormRequest
         return [
             'name' => 'required|string',
             'price' => 'required|numeric',
-            'stock_balance' => 'required|integer'
+            // 'stock_balance' => 'required|integer'
         ];
     }
 }

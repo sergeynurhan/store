@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CompanyRequest;
+use App\Http\Resources\CompanyResource;
 use App\Models\Company;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,7 @@ class CompanyController extends Controller
     {
         $companies = Company::all();
 
-        return response()->json($companies);
+        return CompanyResource::collection($companies);
     }
 
     /**
@@ -23,46 +24,36 @@ class CompanyController extends Controller
      */
     public function store(CompanyRequest $request, Company $company)
     {
-        $this->authorize('create', $company);
-
         $data = $request->validated();
         $company = Company::create($data);
 
-        return response()->json($company);
+        return new CompanyResource($company);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Company $company)
     {
-        $company = Company::find($id);
-
-        return response()->json($company);
+        return new CompanyResource($company);
     }
 
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(CompanyRequest $request, $id, Company $company)
+    public function update(CompanyRequest $request, Company $company)
     {
-        $company = Company::find($id);
-
-        $this->authorize('update', $company);
         $company->update($request->validated());
 
-        return response()->json($company);
+        return new CompanyResource($company);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Company $company)
     {
-        $company = Company::find($id);
-
-        $this->authorize('delete', $company);
         $company->delete();
 
         return response()->json("Company deleted successfuly!");
